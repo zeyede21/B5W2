@@ -1,0 +1,25 @@
+# Core
+pandas
+numpy
+
+# Scraping
+google-play-scraper
+
+# NLP & Sentiment Analysis
+nltk
+textblob
+spacy
+scikit-learn
+transformers
+torch
+
+# Visualization
+matplotlib
+seaborn
+wordcloud
+
+# Optional: progress bar
+tqdm
+
+# Jupyter
+notebook
