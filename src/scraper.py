@@ -1,35 +1,41 @@
-from google_play_scraper import Sort, reviews
-import pandas as pd
+# task1_scrape_reviews.py
 
-def get_reviews(app_id, bank_name, n_reviews=400):
-    result, _ = reviews(
+from google_play_scraper import reviews, Sort
+import pandas as pd
+from datetime import datetime
+# ✅ Updated app package names
+bank_apps = {
+    "Commercial Bank of Ethiopia": "com.combanketh.mobilebanking",
+    "Bank of Abyssinia": "com.boa.boaMobileBanking",
+    "Dashen Bank": "com.dashen.dashensuperapp"
+}
+
+def clean_review_data(raw_reviews, bank_name):
+    return [
+        {
+            "review": r["content"].strip(),
+            "rating": r["score"],
+            "date": r["at"].strftime("%Y-%m-%d"),
+            "bank": bank_name,
+            "source": "Google Play"
+        }
+        for r in raw_reviews if r.get("content") and r.get("score") and r.get("at")
+    ]
+
+# Scrape reviews
+all_reviews = []
+for bank, app_id in bank_apps.items():
+    print(f"Scraping reviews for {bank}...")
+    reviews_data, _ = reviews(
         app_id,
         lang='en',
         country='us',
         sort=Sort.NEWEST,
-        count=n_reviews
+        count=450
     )
-    df = pd.DataFrame(result)
-    df = df[['content', 'score', 'at']]
-    df.columns = ['review', 'rating', 'date']
-    df['bank'] = bank_name
-    df['source'] = 'Google Play'
-    return df
+    all_reviews.extend(clean_review_data(reviews_data, bank))
 
-# Example usage
-cbe_app_id = 'com.ethiopian.cbe.mobile'     # replace with actual Play Store ID
-# boa_app_id = 'com.abyssinia.bank.app'       # replace with actual Play Store ID
-# dashen_app_id = 'com.dashenbank.app'        # replace with actual Play Store ID
-
-# Scrape reviews
-cbe_reviews = get_reviews(cbe_app_id, 'Commercial Bank of Ethiopia')
-# boa_reviews = get_reviews(boa_app_id, 'Bank of Abyssinia')
-# dashen_reviews = get_reviews(dashen_app_id, 'Dashen Bank')
-
-# Combine all
-cbe_reviews = pd.concat([cbe_reviews], ignore_index=True)
-
-# Save to CSV
-cbe_reviews.to_csv('..data/raw/google_play_reviews.csv', index=False)
-
-print("✅ Reviews scraped and saved.")
+# Convert to DataFrame and save
+df = pd.DataFrame(all_reviews).drop_duplicates(subset=["review", "date", "bank"])
+df.to_csv("../data/bank_reviews_cleaned.csv", index=False)
+print(f"✅ Saved {len(df)} cleaned reviews to 'bank_reviews_cleaned.csv'")
