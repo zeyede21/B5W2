@@ -16,4 +16,5 @@ def plot_sentiment_by_bank(df):
     plt.xticks(rotation=15)
     plt.legend(title='Sentiment')
     plt.tight_layout()
+    plt.savefig('../visualizations/sentiment_vs_theme_heatmap.png')
     plt.show()

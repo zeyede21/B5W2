@@ -19,3 +19,5 @@ def plot_top_themes(df):
     plt.ylabel('Theme')
     plt.tight_layout()
     plt.show()
+    plt.savefig('../visualizations/top_themes.png')
+    plt.show()
