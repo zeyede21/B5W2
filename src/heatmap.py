@@ -30,4 +30,5 @@ def plot_sentiment_theme_heatmap(df):
     plt.ylabel('Theme')
     plt.xticks(rotation=45)
     plt.tight_layout()
+    plt.savefig('../visualizations/sentiment_vs_theme_heatmap.png')
     plt.show()
